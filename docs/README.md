@@ -1,50 +1,79 @@
-# Understanding the Iris Dataset and Model Training
+# FPGA Deployment of Iris Classification Model
 
-## Background
+This repository showcases the implementation of a machine learning classifier for the Iris dataset, specifically optimized for Field-Programmable Gate Array (FPGA) deployment through `hls4ml`. The neural network undergoes quantization and pruning techniques to ensure efficient FPGA resource utilization.
 
-### Iris Dataset
+## Installation
 
-The Iris dataset is a renowned dataset in the field of machine learning and statistics. It is frequently used for demonstrating various machine learning algorithms and techniques. The dataset consists of 150 observations (individual iris flowers), divided into three species: Setosa, Versicolor, and Virginica. Each observation includes four features that describe the physical dimensions of the flowers:
+Initialize the development environment by installing all required dependencies:
 
-1. **Sepal Length (cm)**
-2. **Sepal Width (cm)**
-3. **Petal Length (cm)**
-4. **Petal Width (cm)**
+```bash
+poetry install
+```
 
-For reference, here is an image describing the different parts of a flower (including Sepal and Petal):
+**Important:** Expect a lengthy installation process due to comprehensive machine learning frameworks including TensorFlow and PyTorch.
 
-![Parts of a Flower](flower_parts.png)
+## Execution
 
-The objective is to classify the species of an iris flower based on these four features. The Iris dataset is particularly valuable for its simplicity and the clear distinction between the species based on the provided features.
+Launch the complete model development and deployment pipeline:
 
-### Visualization
+```bash
+poetry run buildmodel
+```
 
-To better understand the relationships between the features in the Iris dataset, pairwise scatter plots have been generated. Each plot compares two features, with different colors representing the three Iris species.
+This executes the `BuildModel` module, orchestrating the full workflow from data preparation through FPGA bitstream creation.
 
-![Pairwise Scatterplots of Iris Dataset](iris_pairwise_scatter_plots.png)
+## Repository Organization
 
-This image shows pairwise scatter plots of the Iris dataset, illustrating the relationships between the four features (Sepal Length, Sepal Width, Petal Length, and Petal Width) for the three Iris species (Setosa, Versicolor, Virginica).
+- **`.gitignore`**: Git exclusion rules for temporary and generated files.
+- **`pyproject.toml`**: Poetry configuration with project metadata and dependency specifications.
+- **`utilities/on_target.py`**: Target board execution script for loading test data and performing inference.
+- **`iris_model_on_fpgas/BuildModel.py`**: Core module managing the end-to-end pipeline from dataset handling to FPGA preparation.
+- **`iris_model_on_fpgas/__init__.py`**: Package initialization file.
 
-### Training the Data
+## Pipeline Overview
 
-Training a machine learning model involves the following steps:
+The `BuildModel` module executes the following workflow:
 
-1. **Data Preparation**: The dataset is divided into training and testing sets. The training set is used to train the model, while the testing set is used to evaluate the model's performance.
+1. **Data Preparation**: Acquires the Iris dataset, applies preprocessing transformations, creates train/test splits, and persists test samples.
+2. **Model Development**: Constructs a quantized neural network architecture, applies structured pruning for size optimization, and trains on the prepared dataset.
+3. **Hardware Generation**: Transforms the Keras model into HLS-compatible format via `hls4ml`, performs synthesis, and produces the FPGA bitstream.
+4. **Deployment Preparation**: Aggregates all deployment artifacts (bitstream, hardware handoff files, driver utilities) into the `package` directory.
+5. **Target Transfer**: (Optional) Deploys prepared files to the destination FPGA board using secure copy protocol.
 
-2. **Model Definition**: A machine learning model, such as a neural network, is defined. This model includes layers and parameters that will be adjusted during the training process.
+## Target Board Execution
 
-3. **Training Process**: The model is trained on the training dataset. During training, the model learns the relationships between the features and the target labels (species) by minimizing a loss function. This is done through an optimization algorithm, such as gradient descent.
+After successful file transfer to the FPGA board, execute the inference script:
 
-4. **Evaluation**: After training, the model is evaluated on the testing dataset to assess its performance. Metrics such as accuracy are used to determine how well the model can classify new, unseen data.
+```bash
+python on_target.py
+```
 
-5. **Optimization**: Techniques such as pruning and quantization can be applied to optimize the model for deployment, particularly on hardware like FPGAs. These techniques help reduce the model size and improve its efficiency without significantly sacrificing accuracy.
+The script performs:
+- Test dataset loading
+- FPGA bitfile configuration
+- Model inference execution and result persistence
 
-### Significance of the Iris Dataset
+## Model Verification
+Model validation occurs before hardware synthesis to ensure accuracy preservation. The console output displays comparative metrics:
+```
+Accuracy of the original pruned and quantized model: 93.33%
+Accuracy of the HLS model: 93.33%
+```
 
-The Iris dataset is widely used for educational purposes and as a benchmark for various machine learning algorithms. Its simplicity and the clear distinctions between classes make it an ideal starting point for those new to machine learning. It allows researchers and practitioners to experiment with different algorithms and techniques, gaining insights into model training, evaluation, and optimization.
+## Technology Stack
 
-Understanding the Iris dataset and the basics of model training provides a solid foundation for exploring more complex datasets and advanced machine learning concepts.
+This project leverages Poetry for dependency management with the following key components:
 
----
+- Machine learning frameworks: `tensorflow`, `torch`, `scikit-learn`
+- FPGA optimization: `hls4ml`, `qkeras` 
+- Hardware interface: `pynq`
+- Development environment: Various Jupyter ecosystem packages
 
-This document aims to provide a comprehensive understanding of the Iris dataset and the fundamental concepts involved in training a machine learning model. The included visualizations and explanations are intended to help readers grasp the relationships within the data and the process of building an effective model.
+Complete dependency specifications are available in `pyproject.toml`.
+
+## Licensing
+
+This project operates under the MIT License terms.
+
+## Maintainer
+Sameer Suleman
