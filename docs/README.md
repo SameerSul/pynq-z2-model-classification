@@ -27,8 +27,8 @@ This executes the `BuildModel` module, orchestrating the full workflow from data
 - **`.gitignore`**: Git exclusion rules for temporary and generated files.
 - **`pyproject.toml`**: Poetry configuration with project metadata and dependency specifications.
 - **`utilities/on_target.py`**: Target board execution script for loading test data and performing inference.
-- **`iris_model_on_fpgas/BuildModel.py`**: Core module managing the end-to-end pipeline from dataset handling to FPGA preparation.
-- **`iris_model_on_fpgas/__init__.py`**: Package initialization file.
+- **`classification_model_on_fpgas/BuildModel.py`**: Core module managing the end-to-end pipeline from dataset handling to FPGA preparation.
+- **`classification_model_on_fpgas/__init__.py`**: Package initialization file.
 
 ## Pipeline Overview
 
